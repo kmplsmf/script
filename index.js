@@ -15,11 +15,11 @@ async function main() {
   console.log(`Последний order_id: ${maxId}`);
 
   const orderList = await (await fetch(`http://gs.naukanet.ru/api/nextgis/orders/get-prorabotki-list?last_order_id=${maxId}`)).json();
-  const data = JSON.stringify(orderList)
+  const data = JSON.stringify(orderList);
 
   let stmt = `SELECT * FROM public.order_create_jsonb($1::jsonb)`;
 
-  pool.query(stmt, [data])
+  pool.query(stmt, [data]);
 }
 
 main();
