@@ -9,4 +9,4 @@ RUN npm install
 
 COPY . .
 
-CMD node node_modules/postgrator-cli/index.js -c /example.postgratorrc.json | node src/botServer.js --client telegram --lang ru --environment dev
+CMD node node_modules/postgrator-cli/index.js -c /example.postgratorrc.json
