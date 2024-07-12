@@ -1,0 +1,55 @@
+version: '2.1'
+services:
+  postgres:
+    image: postgres:14.8-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    ports:
+      - '5438:5432'
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 1s
+      timeout: 1s
+      retries: 10
+  redis:
+    image: redis:7.0.11-alpine
+    ports:
+      - '6380:6379'
+
+  bot:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    env_file:
+      - ./.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - '9200:9200'
+#
+#  prometheus:
+#    image: prom/prometheus:v2.49.1
+#    ports:
+#      - "9090:9090"
+#    volumes:
+#      - ./dev.prometheus.yml:/etc/prometheus/prometheus.yml:ro
+#  postgres-exporter:
+#    image: prometheuscommunity/postgres-exporter
+#    ports:
+#      - "9187:9187"
+#    environment:
+#      DATA_SOURCE_NAME: "postgresql://postgres:ahc3veaM@postgres:5432/postgres?sslmode=disable"
+#  grafana:
+#    image: grafana/grafana:10.3.1
+#    ports:
+#      - "3000:3000"
+#    volumes:
+#      - 'grafana_storage:/var/lib/grafana'
+#volumes:
+#  grafana_storage: { }
