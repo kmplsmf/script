@@ -14,12 +14,11 @@ async function main() {
   console.log(`Последний order_id: ${maxId}`);
 
   const orderList = await (await fetch(`http://gs.naukanet.ru/api/nextgis/orders/get-prorabotki-list?last_order_id=${maxId}`)).json();
+  const data = JSON.stringify(orderList)
 
-  let stmt = `INSERT INTO ${process.env.TARGET_TABLE} (orderid, ordertypeid, descr, lat, lon, orderurl) VALUES ($1, $2, $3, $4, $5, $6)`;
+  let stmt = `SELECT * FROM public.order_create_jsonb($1::jsonb)`;
 
-  for (const order of orderList) {
-    await pool.query(stmt, [order.order_id, order.order_type_id, order.description, order.latitude, order.longitude, order.order_url]);
-  }
+  pool.query(stmt, [data])
 }
 
 main();
