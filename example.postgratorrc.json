@@ -1,0 +1,10 @@
+{
+  "migrationPattern": "migrations/*",
+  "driver": "pg",
+  "host": "postgres",
+  "port": 5432,
+  "database": "postgres",
+  "username": "postgres",
+  "password": "postgres",
+  "schemaTable": "public.migration"
+}

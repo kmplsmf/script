@@ -1,9 +1,12 @@
 {
-  "name": "sscript",
+  "name": " ",
   "version": "0.0.1",
+  "description": "",
   "private": true,
-  "keywords": [],
-  "license": "ISC",
+  "keywords": [
+    ""
+  ],
+  "license": "",
   "author": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -19,9 +22,8 @@
     "webpack-merge": "^5.10.0"
   },
   "dependencies": {
-    "dotenv": "^16.4.5",
-    "pg": "^8.12.0"
-  },
-  "main": "index.js",
-  "description": ""
+    "pg": "^8.12.0",
+    "postgrator": "^7.2.0",
+    "postgrator-cli": "^8.1.0"
+  }
 }
