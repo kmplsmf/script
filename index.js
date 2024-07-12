@@ -1,48 +1,33 @@
-const {max} = require("pg/lib/defaults");
-const fs = require('fs');
-const Pool = require('pg').Pool;
+const {Pool} = require('pg');
 const pool = new Pool({
   user: 'postgres',
-  host: '192.168.1.62',
+  host: 'localhost',
   database: 'postgres',
   password: 'postgres',
   port: 5433,
 });
 
-pool.query('SELECT orderid FROM public.result_1 ORDER BY orderid DESC LIMIT 1', function (error, results, fields) {
+pool.query('SELECT coalesce(max(orderid), 0) as max_id FROM public.result_1;', function (error, results, fields) {
+
   if (error) console.log(error);
-  const maxOrderID = results.rows[0].orderid
+  console.log(results)
+  const maxOrderID = results.rows[0].max_id
   console.log(results)
   console.log('Самое большое число из колонки orderid: ', maxOrderID);
   someOtherFunction(maxOrderID);
 
-fs.readFile('data.json', 'utf8', (err, data) => {
-  if (err) {
-    console.error('Ошибка чтения файла: ' + err);
-    return;
-  }
-
-  const jsonData = JSON.parse(data);
-
-  const query = 'INSERT INTO result_1 (orderid, ordertypeid, descr, latitude, longitude, orderurl) VALUES ?';
-  const value = jsonData.map(item => [item.value1, item.value2, item.value3, item.value4, item.value5, item.value6]);
-
-  pool.query(query, [value], (error, results, fields) => {
-    if (error) {
-      console.error('Ошибка при вставке данных: ' + error);
-      return;
-    }
-    console.log('Данные успешно вставлены в таблицу result_1.');
-  });
 });
 
-function someOtherFunction(orderID) {
-  console.log('Используем maxOrderID в другой функции: ', orderID);
 
+async function someOtherFunction(orderID) {
+  console.log('kek')
+  const response = await fetch('http://gs.naukanet.ru/api/nextgis/orders/get-prorabotki-list');
+  const data = await response.json();
+  console.log(data)
+  let stmt = 'INSERT INTO result_1 (orderid, ordertypeid, descr, lat, lon, orderurl) VALUES ($1, $2, $3, $4, $5, $6)';
 
-}})
-
-pool.end();
-
-
-
+  for (let i = 0; i < data.length; i++) {
+    let row = data[i];
+    await pool.query(stmt, [row.order_id, row.order_type_id, row.description, row.latitude, row.longitude, row.order_url]);
+  }
+}
